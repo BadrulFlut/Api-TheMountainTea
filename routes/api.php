@@ -21,11 +21,11 @@ use Illuminate\Support\Facades\Route;
 //Route barang
 Route::get('/benda',[App\Http\Controllers\BarangController::class,'index']);
 Route::get('/benda/{id}',[App\Http\Controllers\BarangController::class,'show']);
-Route::post('/benda/add',[App\Http\Controllers\BarangController::class,'store']);
-Route::post('/benda/edit',[App\Http\Controllers\BarangController::class,'update']);
-Route::get('/benda/delete/{id}',[App\Http\Controllers\BarangController::class,'destroy']);
+Route::post('/benda',[App\Http\Controllers\BarangController::class,'store']);
+Route::match(['put','patch'],'/benda/{id}',[App\Http\Controllers\BarangController::class,'update']);
+Route::delete('/benda/{id}',[App\Http\Controllers\BarangController::class,'destroy']);
 Route::get('/benda/category/{category}',[App\Http\Controllers\BarangController::class,'category']);
 
 //Pengiriman barang
-Route::get('/pengiriman',[App\Http\Controllers\BarangController::class,'index']);
-Route::get('/pengiriman/{id}',[App\Http\Controllers\BarangController::class,'show']);
+Route::get('/pengiriman',[App\Http\Controllers\PengirimanController::class,'index']);
+Route::get('/pengiriman/{id}',[App\Http\Controllers\PengirimanController::class,'show']);

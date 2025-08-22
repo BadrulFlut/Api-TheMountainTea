@@ -10,5 +10,5 @@ class Pengiriman extends Model
     use HasFactory;
 
     protected $table = 'pengiriman';
-    protected $primarykey = 'id';
+    protected $primaryKey = 'id';
 }

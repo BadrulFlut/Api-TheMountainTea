@@ -26,7 +26,7 @@ class BarangController extends Controller
     public function category($category)
     {
         $barang = Barang::where('category', $category)->get();
-        if (is_null($barang)) {
+        if ($barang->isEmpty()) {
             return response()->json("not found", 404);
         } else {
             return response()->json($barang, 200);
@@ -42,18 +42,26 @@ class BarangController extends Controller
      */
     public function store(Request $request)
     {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'description' => 'nullable|string',
+            'image' => 'nullable|string',
+            'category' => 'required|string|max:255',
+        ]);
+
         $barang = new Barang;
-        $barang->name = $request->name;
-        $barang->price = $request->price;
-        $barang->description = $request->description;
-        $barang->image = $request->image;
-        $barang->category = $request->category;
+        $barang->name = $validated['name'];
+        $barang->price = $validated['price'];
+        $barang->description = $validated['description'] ?? null;
+        $barang->image = $validated['image'] ?? null;
+        $barang->category = $validated['category'];
         $success = $barang->save();
 
         if (!$success) {
             return response()->json("Error", 500);
         } else {
-            return response()->json("Success", 201);
+            return response()->json($barang, 201);
         }
         
 
@@ -94,21 +102,33 @@ class BarangController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
-        $barang = Barang::find($request->id);
-        $barang->name = $request->name;
-        $barang->price = $request->price;
-        $barang->description = $request->description;
-        $barang->image = $request->image;
-        $barang->category = $request->category;
+        $validated = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'price' => 'sometimes|required|numeric|min:0',
+            'description' => 'nullable|string',
+            'image' => 'nullable|string',
+            'category' => 'sometimes|required|string|max:255',
+        ]);
+
+        $barang = Barang::find($id);
+        if (!$barang) {
+            return response()->json("not found", 404);
+        }
+        
+        if (array_key_exists('name', $validated)) $barang->name = $validated['name'];
+        if (array_key_exists('price', $validated)) $barang->price = $validated['price'];
+        if (array_key_exists('description', $validated)) $barang->description = $validated['description'];
+        if (array_key_exists('image', $validated)) $barang->image = $validated['image'];
+        if (array_key_exists('category', $validated)) $barang->category = $validated['category'];
 
         $success = $barang->save();
 
         if (!$success) {
             return response()->json("Error", 500);
         } else {
-            return response()->json("Success", 201);
+            return response()->json($barang, 200);
         }
         
     }
@@ -129,7 +149,7 @@ class BarangController extends Controller
         if (!$success) {
             return response()->json("Error Delete", 500);
         }else{
-            return response()->json("Success", 201);
+            return response()->json(null, 200);
         }
     }
 }
